@@ -1,0 +1,16 @@
+---
+
+- hosts: localhost
+  connection: local
+  remote_user: root
+  gather_facts: yes
+
+  pre_tasks:
+  - name: Include project vars
+    include_vars:
+      file: "/applis/ansible/ans-create-project/project-vars/project.yml"
+  tasks:
+  - name: Include project roles
+    include_role:
+      name: role-create-project-000
+      allow_duplicates: false

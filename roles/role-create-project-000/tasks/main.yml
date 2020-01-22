@@ -1,0 +1,77 @@
+---
+
+- name: Ansible Project Creation - Create the local project
+  file:
+    path: "/applis/ansible/ans-{{ ansible_project_name }}"
+    state: directory
+    owner: "{{ ansible_project_user }}"
+    group: "{{ ansible_project_group }}"
+    mode: 0755
+  tags:
+    - project
+
+- name: Ansible Project Creation - Create all directories inside the project
+  file:
+    path: "/applis/ansible/ans-{{ ansible_project_name }}/{{ item }}"
+    state: directory
+    owner: "{{ ansible_project_user }}"
+    group: "{{ ansible_project_group }}"
+    mode: 0755
+  loop:
+    - hosts
+    - host_vars
+    - log
+    - project-vars
+    - roles
+    - vault
+  tags:
+    - project
+
+- name: Ansible Project Creation - Create all directories inside role project
+  file:
+    path: "/applis/ansible/ans-{{ ansible_project_name }}/roles/{{ item }}"
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_project_user }}"
+    group: "{{ ansible_project_group }}"
+    mode: 0755
+  loop:
+    - role-{{ ansible_project_name }}-000
+    - role-{{ ansible_project_name }}-000/defaults
+    - role-{{ ansible_project_name }}-000/docs
+    - role-{{ ansible_project_name }}-000/files
+    - role-{{ ansible_project_name }}-000/meta
+    - role-{{ ansible_project_name }}-000/tasks
+    - role-{{ ansible_project_name }}-000/templates
+
+- name: Ansible Project Creation - Copy ansible.cfg inside the project
+  copy:
+    src: ansible.cfg
+    dest: "/applis/ansible/ans-{{ ansible_project_name }}"
+    owner: "{{ ansible_project_user }}"
+    group: "{{ ansible_project_group }}"
+    mode: 0644
+
+- name: Ansible Project Creation - Create Inventory files
+  file:
+    path: "/applis/ansible/ans-{{ ansible_project_name }}/hosts/{{ item }}"
+    state: touch
+    owner: "{{ ansible_project_user }}"
+    group: "{{ ansible_project_group }}"
+    mode: 0644
+    force: yes
+    unsafe_writes: yes
+  loop:
+    - hosts-production
+    - hosts-integration
+
+- name: Ansible Project Creation - Ending
+  debug:
+    msg:
+    - "The project : ans-{{ ansible_project_name }}"
+    - "has been succefully created in : /applis/ansible/ans-{{ ansible_project_name }}"
+    - "You set those variables while running this playbook :"
+    - "User : {{ ansible_project_user }} "
+    - "Group : {{ ansible_project_group }}"
+    - "Project Name : {{ ansible_project_name}}"
+    - "Enjoy !"
